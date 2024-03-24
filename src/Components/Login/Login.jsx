@@ -19,16 +19,7 @@ const Login = () => {
         setError('');
         setSuccess('');
 
-        //! Validation Check
-        //Todo dont check pass valdidation on login time
-        if (!/(?=.*?[A-Z])/.test(pass)) {
-            setError('Please add at  last one uppercase letter ');
-            return;
-
-        } else if (!/(?=.*?[!@#%&*])/.test(pass)) {
-            setError("Please add special letter");
-            return;
-        }
+       
         //!login
         signInWithEmailAndPassword(auth, email, pass)
             .then(result => {
