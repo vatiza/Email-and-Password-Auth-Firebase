@@ -3,6 +3,7 @@ import Form from 'react-bootstrap/Form';
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 import app from '../firebase/firebase_init_config';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const auth = getAuth(app);
 const Registration = () => {
@@ -70,6 +71,7 @@ const Registration = () => {
                     Submit
                 </Button>
             </Form>
+            <p><small>Already Have Account? Please<Link to='/login'>Login</Link> </small></p>
             <p className='text-bg-danger '>{error}</p>
             <p className='text-bg-success '>{success}</p>
         </div>
