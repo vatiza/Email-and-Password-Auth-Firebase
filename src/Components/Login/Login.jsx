@@ -1,6 +1,6 @@
 
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-import { useState } from 'react';
+import { getAuth, sendPasswordResetEmail, signInWithEmailAndPassword } from 'firebase/auth';
+import { useRef, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import app from '../firebase/firebase_init_config';
@@ -10,6 +10,7 @@ const auth = getAuth(app);
 const Login = () => {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const emailRef = useRef();
     const handleLogin = event => {
         event.preventDefault();
         const form = event.target;
@@ -19,7 +20,7 @@ const Login = () => {
         setError('');
         setSuccess('');
 
-       
+
         //!login
         signInWithEmailAndPassword(auth, email, pass)
             .then(result => {
@@ -31,10 +32,23 @@ const Login = () => {
             })
             .catch(error => {
                 setError(error.message);
+            });
+    }
+    const handlerestPassword = event => {
+        const email = (emailRef.current.value);
+        if (!email) {
+            alert('Please provide you email address');
+            return;
+        }
+        sendPasswordResetEmail(auth, email)
+            .then(() => {
+
+                alert("Password reset email sent!")
             })
-
-
-
+            .catch(error => {
+                console.log(error);
+                setError(error);
+            })
     }
     return (
 
@@ -44,7 +58,7 @@ const Login = () => {
                 <Form onSubmit={handleLogin}>
                     <Form.Group className="mb-3" controlId="formBasicEmail">
 
-                        <Form.Control type="email" name='email' placeholder="Enter email" required />
+                        <Form.Control type="email" name='email' ref={emailRef} placeholder="Enter email" required />
 
                     </Form.Group>
 
@@ -59,6 +73,7 @@ const Login = () => {
                         Submit
                     </Button>
                 </Form>
+                <p><small>Fotget Password? Please <button onClick={handlerestPassword} className='btn btn-link'>Reset Password</button></small></p>
                 <p><small>Don't Have Account? Create a new<Link to='/regisRBS'>account</Link> </small></p>
                 <p className='text-danger '>{error}</p>
                 <p className='text-primary '>{success}</p>
