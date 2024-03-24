@@ -2,24 +2,47 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 import app from '../firebase/firebase_init_config';
+import { useState } from 'react';
 
 const auth = getAuth(app);
 const Registration = () => {
 
-    const handleRegister = event => {
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
+
+    const handleSubmit = event => {
+
         event.preventDefault();
+        setSuccess('');
+        setError('');
         const email = event.target.email.value;
         const pass = event.target.password.value;
         console.log(email, pass);
+
+        //!password validation check
+        if (!/(?=.*?[A-Z])/.test(pass)) {
+            setError('Please at last uppercase ');
+            return;
+
+        }
+        else if (pass.length < 8) {
+            setError('Please set the 8 digit');
+            return;
+        }
+
 
         //create user in firebase
         createUserWithEmailAndPassword(auth, email, pass)
             .then(resutl => {
                 const loggedUser = resutl.user;
                 console.log(loggedUser);
+                setError('');
+                event.target.reset();
+                setSuccess('Successfully Create Account');
             })
             .catch(error => {
-                console.log(error)
+                console.log(error.message);
+                setError(error.message);
             })
     }
 
@@ -29,16 +52,16 @@ const Registration = () => {
     return (
         <div className='mx-auto w-50  '>
             <h4>Please Register </h4>
-            <Form onSubmit={handleRegister}>
+            <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3" controlId="formBasicEmail">
 
-                    <Form.Control type="email" name='email' placeholder="Enter email" />
+                    <Form.Control type="email" name='email' placeholder="Enter email" required />
 
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formBasicPassword">
 
-                    <Form.Control type="password" name='password' placeholder="Password" />
+                    <Form.Control type="password" name='password' placeholder="Password" required />
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formBasicCheckbox">
                     <Form.Check type="checkbox" label="Accept Terms and Condition" />
@@ -47,6 +70,8 @@ const Registration = () => {
                     Submit
                 </Button>
             </Form>
+            <p className='text-bg-danger '>{error}</p>
+            <p className='text-bg-success '>{success}</p>
         </div>
     );
 };
